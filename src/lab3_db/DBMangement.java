@@ -8,10 +8,10 @@ package lab3_db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 /**
  *
@@ -20,40 +20,64 @@ import java.util.List;
 public class DBMangement {
 
     Connection c = null;
-     PreparedStatement stmt;
-    
-        
-    
+    PreparedStatement stmt;
 
     public DBMangement() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
         c = DriverManager.getConnection("jdbc:sqlite:USER.db");
-        stmt = c.prepareStatement(null);
         System.out.println("Opened database successfully");
 
     }
-     
-    public void insertRow(User s) throws SQLException{
+
+    public void insertRow(User s) throws SQLException {
+
+        String sql = "INSERT INTO company(F_NAME,M_NAME,L_NAME,EMAIL,phone) VALUES(?,?,?,?)";
+        stmt.setString(2, s.getfName());
+        stmt.setString(3, s.getmName());
+        stmt.setString(4, s.getlName());
+        stmt.setString(5, s.getEmail());
+        stmt.setInt(6, s.getPhone());
+
+        stmt.executeUpdate(sql);
+        c.commit();
+    }
+
+    public void updateRow(User s) throws SQLException {
+
+        String sql = "UPDATE company SET F_NAME = ? , "
+                + "M_NAME = ? ,"
+                + "L_NAME = ? ,"
+                + "M_NAME = ? ,"
+                + "EMAIL = ? ,"
+                + "phone = ? "
+                + "WHERE ID = ?";
         
-    String sql ="INSERT INTO company(F_NAME,M_NAME,L_NAME,phone) VALUES(?,?,?,?)";
-         stmt.setString(1,s.getfName());
-         stmt.setString(1,s.getmName());
-         stmt.setString(1,s.getmName());
-         stmt.setInt(1,s.getPhone());
-         stmt.executeUpdate(sql);
+                        stmt = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+              stmt.setString(1,s.getfName());
+                            stmt.setString(2,s.getmName());
+              stmt.setString(3,s.getlName());
+              stmt.setString(4,s.getEmail());
+              stmt.setInt(5,s.getPhone());
+              stmt.setInt(6,s.getId());
+
+        stmt.executeUpdate();
+        c.commit();
     }
-    
-    public void updateRow(User s)throws SQLException{
-     String sql="UPDATE company "
-                + "SET F_NAME = ? "
-                + "WHERE id = ?";
+
+    public ResultSet getAll() throws SQLException {
+        stmt = c.prepareStatement("SELECT * FROM COMPANY;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+        ResultSet rs = stmt.executeQuery();
+
+        return rs;
     }
-    public List <User> getAll(){
-    List <User>users=new ArrayList<>();
-    return users;
-    }
-    public void deletRow(User s){
-    
+
+    public void deletRow(User s) throws SQLException {
+        stmt = c.prepareStatement("DELETE from COMPANY where ID = ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
+         
+        stmt.executeUpdate();
+        c.commit();
     }
 
 }
