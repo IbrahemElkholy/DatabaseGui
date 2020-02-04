@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventType;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -109,10 +109,24 @@ public class Lab3_DB extends Application {
         Button deleteButton = new Button("Delete");
         Button firsButton = new Button("First");
         Button previousButton = new Button("Previous");
-        Button nextButton = new Button("next");
-        newbButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+        previousButton.addEventHandler(ActionEvent.ACTION, (event)->{
             
         });
+        
+        Button nextButton = new Button("next");
+        nextButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+            try {
+                User user = dBMangement.getUser();
+
+                if(user!=null){
+                    setFields(user);
+                }
+                
+            } catch (SQLException ex) {
+                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+        
         Button lasButton = new Button("Last");
 
         hBox.getChildren()
@@ -176,8 +190,8 @@ public class Lab3_DB extends Application {
 
    void setFields(User user){
        idField.setText(String.valueOf(user.getId()));
-            fNameField.setText(user.getfName());
-            mNameField.setText(user.getmName());
+        fNameField.setText(user.getfName());
+        mNameField.setText(user.getmName());
             lNameField.setText(user.getlName());
             emailField.setText(user.getEmail());
             phoneField.setText(String.valueOf(user.getPhone()));

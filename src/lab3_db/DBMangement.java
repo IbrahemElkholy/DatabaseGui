@@ -28,6 +28,7 @@ public class DBMangement {
     public DBMangement() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
         c = DriverManager.getConnection("jdbc:sqlite:USER1");
+users=getAll();
         System.out.println("Opened database successfully");
 
     }
@@ -86,10 +87,7 @@ public class DBMangement {
 
     
      public User getUser() throws SQLException {
-         if(users==null){
-             users=getAll();
-         }
-        try {
+      
             if (users.next()) {
                 User user = new User();
                 user.setId(users.getInt("ID"));
@@ -102,9 +100,25 @@ public class DBMangement {
                 return user;
 
             }
-        } catch (SQLException ex) {
-            Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
+        return null;
+    }
+     
+    public User getPrUser() throws SQLException{
+         if (users.previous()) {
+               
+             User user = new User();
+             user.setId(users.getInt("ID"));
+             user.setfName(users.getString("F_NAME"));
+             user.setmName(users.getString("M_NAME"));
+             user.setlName(users.getString("L_NAME"));
+             user.setEmail(users.getString("EMAIL"));
+             user.setPhone(users.getInt("Phone"));
+
+             return user;
+
+            }
+       
         return null;
     }
 
