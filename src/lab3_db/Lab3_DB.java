@@ -158,6 +158,11 @@ public class Lab3_DB extends Application {
             public void handle(ActionEvent event) {
                 try {
                     dBMangement.deletRow(Integer.parseInt(idField.getText()));
+                    User user = dBMangement.getUser();
+
+                if (user != null) {
+                    setFields(user);    
+                }   
                 } catch (SQLException ex) {
                     Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
                 }

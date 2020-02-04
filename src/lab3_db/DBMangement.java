@@ -85,6 +85,12 @@ public class DBMangement {
         
         stmt.setInt(1, userID);
         stmt.executeUpdate();
+        
+        users = getAll();
+        do {            
+            users.next();
+            System.out.println(users.toString());
+        } while (users.getInt("ID")<userID);
     }
 
     public User getUser() throws SQLException {
