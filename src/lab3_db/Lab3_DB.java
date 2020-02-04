@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -41,12 +42,13 @@ import javafx.stage.Stage;
 public class Lab3_DB extends Application {
 
     DBMangement dBMangement;
-     TextField idField;
-        TextField fNameField;
-        TextField lNameField;
-        TextField mNameField;
-        TextField emailField;
-        TextField phoneField;
+    TextField idField;
+    TextField fNameField;
+    TextField lNameField;
+    TextField mNameField;
+    TextField emailField;
+    TextField phoneField;
+
     @Override
     public void stop() throws Exception {
         super.stop(); //To change body of generated methods, choose Tools | Templates.
@@ -73,8 +75,6 @@ public class Lab3_DB extends Application {
 
         addLabelsToGridPane(gridPane);
 
-       
-        
         idField = new TextField();
         idField.setDisable(true);
 
@@ -109,26 +109,62 @@ public class Lab3_DB extends Application {
         Button deleteButton = new Button("Delete");
         Button firsButton = new Button("First");
         Button previousButton = new Button("Previous");
-        previousButton.addEventHandler(ActionEvent.ACTION, (event)->{
-            
+        previousButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+            try {
+                User user = dBMangement.getPrUser();
+                setFields(user);
+            } catch (SQLException ex) {
+                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
-        
+
         Button nextButton = new Button("next");
         nextButton.addEventHandler(ActionEvent.ACTION, (event) -> {
             try {
                 User user = dBMangement.getUser();
 
-                if(user!=null){
+                if (user != null) {
                     setFields(user);
                 }
-                
+
             } catch (SQLException ex) {
                 Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
-        Button lasButton = new Button("Last");
 
+        Button lasButton = new Button("Last");
+        updateButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                User user = new User();
+                user.setId(Integer.parseInt(idField.getText()));
+                user.setfName(fNameField.getText());
+                user.setlName(lNameField.getText());
+                user.setmName(mNameField.getText());
+                user.setEmail(emailField.getText());
+                user.setPhone(Integer.parseInt(phoneField.getText()));
+                try {
+                    dBMangement.updateRow(user);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                User user = new User();
+                user.setId(Integer.parseInt(idField.getText()));
+                try {
+                    dBMangement.deletRow(user);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         hBox.getChildren()
                 .addAll(newbButton,
                         updateButton,
@@ -155,15 +191,12 @@ public class Lab3_DB extends Application {
         p.getChildren().add(vBox);
         p.setAlignment(Pos.CENTER);
 
-        User user;
         try {
-            user = dBMangement.getUser();
+           User user = dBMangement.getUser();
             setFields(user);
         } catch (SQLException ex) {
             Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-     
 
         Scene scene = new Scene(p, 300, 250);
 
@@ -188,12 +221,12 @@ public class Lab3_DB extends Application {
         launch(args);
     }
 
-   void setFields(User user){
-       idField.setText(String.valueOf(user.getId()));
+    void setFields(User user) {
+        idField.setText(String.valueOf(user.getId()));
         fNameField.setText(user.getfName());
         mNameField.setText(user.getmName());
-            lNameField.setText(user.getlName());
-            emailField.setText(user.getEmail());
-            phoneField.setText(String.valueOf(user.getPhone()));
-   }
+        lNameField.setText(user.getlName());
+        emailField.setText(user.getEmail());
+        phoneField.setText(String.valueOf(user.getPhone()));
+    }
 }
