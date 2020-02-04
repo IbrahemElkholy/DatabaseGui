@@ -35,12 +35,12 @@ public class DBMangement {
 
     public void insertRow(User s) throws SQLException {
 
-        String sql = "INSERT INTO company(F_NAME,M_NAME,L_NAME,EMAIL,phone) VALUES(?,?,?,?)";
-        stmt.setString(2, s.getfName());
-        stmt.setString(3, s.getmName());
-        stmt.setString(4, s.getlName());
-        stmt.setString(5, s.getEmail());
-        stmt.setInt(6, s.getPhone());
+        String sql = "INSERT INTO company(F_NAME,M_NAME,L_NAME,EMAIL,phone) VALUES(?,?,?,?,?)";
+        stmt.setString(1, s.getfName());
+        stmt.setString(2, s.getmName());
+        stmt.setString(3, s.getlName());
+        stmt.setString(4, s.getEmail());
+        stmt.setInt(5, s.getPhone());
         stmt = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         stmt.executeUpdate();
@@ -54,7 +54,6 @@ public class DBMangement {
         String sql = "UPDATE company SET F_NAME = ? , "
                 + "M_NAME = ? ,"
                 + "L_NAME = ? ,"
-                + "M_NAME = ? ,"
                 + "EMAIL = ? ,"
                 + "Phone = ? "
                 + "WHERE ID = ?";
@@ -82,7 +81,7 @@ public class DBMangement {
     }
 
     public void deletRow(User s) throws SQLException {
-        stmt = c.prepareStatement("DELETE from COMPANY where ID = ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stmt = c.prepareStatement("DELETE from company where ID = ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         stmt.executeUpdate();
         c.commit();
