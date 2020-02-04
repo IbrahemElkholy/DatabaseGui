@@ -21,9 +21,9 @@ import java.util.logging.Logger;
  */
 public class DBMangement {
 
-    ResultSet users;
-    Connection c = null;
-    PreparedStatement stmt;
+    private ResultSet users;
+    private Connection c = null;
+    private PreparedStatement stmt;
 
     public DBMangement() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
@@ -80,11 +80,11 @@ public class DBMangement {
         return rs;
     }
 
-    public void deletRow(User s) throws SQLException {
-        stmt = c.prepareStatement("DELETE from company where ID = ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-
+    public void deletRow(int userID) throws SQLException {
+        stmt = c.prepareStatement("DELETE from company where ID = ?;", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        
+        stmt.setInt(1, userID);
         stmt.executeUpdate();
-        c.commit();
     }
 
     public User getUser() throws SQLException {
