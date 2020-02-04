@@ -5,6 +5,11 @@
  */
 package lab3_db;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -33,12 +38,29 @@ import javafx.stage.Stage;
  */
 public class Lab3_DB extends Application {
 
+    DBMangement dBMangement;
+    ResultSet users;
+
+    @Override
+    public void stop() throws Exception {
+        super.stop(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void init() throws Exception {
+        super.init(); //To change body of generated methods, choose Tools | Templates.
+
+        dBMangement = new DBMangement();
+
+        users = (ResultSet) dBMangement.getAll();
+    }
+
     @Override
     public void start(Stage primaryStage) {
 
         primaryStage.setWidth(600);
         primaryStage.setHeight(500);
-        
+
         GridPane gridPane = new GridPane();
         gridPane.setVgap(10);
         gridPane.setHgap(5);
@@ -70,7 +92,7 @@ public class Lab3_DB extends Application {
         gridPane.add(lNameField, 1, 3);
         gridPane.add(emailField, 1, 4);
         gridPane.add(phoneField, 1, 5);
-        
+
         gridPane.setAlignment(Pos.CENTER);
 
         HBox hBox = new HBox();
@@ -91,42 +113,33 @@ public class Lab3_DB extends Application {
                         previousButton,
                         nextButton,
                         lasButton);
-        
+
         hBox.setSpacing(10);
-        
-       hBox.setAlignment(Pos.CENTER);
-        
+
+        hBox.setAlignment(Pos.CENTER);
+
         VBox vBox = new VBox();
-        vBox.setBorder(new Border(new BorderStroke(Color.BLACK, 
-            BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        vBox.setBorder(new Border(new BorderStroke(Color.BLACK,
+                BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
         vBox.setAlignment(Pos.CENTER);
-    
-        
-        vBox.getChildren().addAll(gridPane,hBox);
+
+        vBox.getChildren().addAll(gridPane, hBox);
         vBox.setPadding(new Insets(25));
-        
-       FlowPane p = new FlowPane();
-       p.setPadding(new Insets(200));
-       p.getChildren().add(vBox);
-       p.setAlignment(Pos.CENTER);
-        
 
-        // Border border = BorderFactory.createLineBorder(Color.yellow)
-//        Button btn = new Button();
-//        btn.setText("Say 'Hello World'");
-//        btn.setOnAction(new EventHandler<ActionEvent>() {
-//            
-//            @Override
-//            public void handle(ActionEvent event) {
-//                System.out.println("Hello World!");
-//            }
-//        });
-//        
-//        StackPane root = new StackPane();
-//        root.getChildren().add(btn);
-//        
+        FlowPane p = new FlowPane();
+        p.setPadding(new Insets(200));
+        p.getChildren().add(vBox);
+        p.setAlignment(Pos.CENTER);
+
+        User user = getUser();
+
+        idField.setText(String.valueOf(user.getId()));
+        fNameField.setText(user.getfName());
+        mNameField.setText(user.getmName());
+        lNameField.setText(user.getlName());
+        phoneField.setText(String.valueOf(user.getPhone()));
+
         Scene scene = new Scene(p, 300, 250);
-
 
         primaryStage.setTitle("Database Viewer");
         primaryStage.setScene(scene);
@@ -147,6 +160,26 @@ public class Lab3_DB extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    private User getUser() {
+        try {
+            if (users.next()) {
+                User user = new User();
+                user.setId(users.getInt("id"));
+                user.setfName(users.getString("F_NAME"));
+                user.setmName(users.getString("M_NAME"));
+                user.setlName(users.getString("L_NAME"));
+                user.setEmail(users.getString("EMAIL"));
+                user.setPhone(users.getInt("phone"));
+
+                return user;
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 }
