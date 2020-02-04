@@ -10,8 +10,10 @@ package lab3_db;
  * @author mashael
  */
 public class User {
+
+   
     private int id,phone;
-    private String fName,lName,mName;
+    private String fName,lName,mName,email;
 
     public int getId() {
         return id;
@@ -51,5 +53,12 @@ public class User {
 
     public void setPhone(int phone) {
         this.phone = phone;
+    }
+     public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
