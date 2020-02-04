@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -114,7 +115,38 @@ public class Lab3_DB extends Application {
             
         });
         Button lasButton = new Button("Last");
+        updateButton.setOnAction(new EventHandler<ActionEvent>() {
 
+            @Override
+            public void handle(ActionEvent event) {
+               User user=new User();
+               user.setId(Integer.parseInt(idField.getText()) );
+               user.setfName(fNameField.getText());
+                user.setlName(lNameField.getText());
+                user.setmName(mNameField.getText());
+                user.setEmail(emailField.getText());
+                user.setPhone(Integer.parseInt(phoneField.getText()));
+                try {
+                    dBMangement.updateRow(user);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                User user =new User();
+                user.setId(Integer.parseInt(idField.getText()));
+                try {
+                    dBMangement.deletRow(user);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         hBox.getChildren()
                 .addAll(newbButton,
                         updateButton,

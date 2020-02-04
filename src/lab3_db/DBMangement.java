@@ -44,6 +44,8 @@ public class DBMangement {
 
         stmt.executeUpdate();
         c.commit();
+        stmt.close();
+        c.close();
     }
 
     public void updateRow(User s) throws SQLException {
@@ -66,6 +68,8 @@ public class DBMangement {
 
         stmt.executeUpdate();
         c.commit();
+        stmt.close();
+        c.close();
     }
 
     public ResultSet getAll() throws SQLException {
@@ -105,6 +109,7 @@ public class DBMangement {
             Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+     }
     public ResultSet getFirst(User s) throws SQLException {
         stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
