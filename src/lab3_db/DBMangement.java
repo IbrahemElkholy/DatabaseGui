@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,12 +21,13 @@ import java.util.List;
  */
 public class DBMangement {
 
+    ResultSet users;
     Connection c = null;
     PreparedStatement stmt;
 
     public DBMangement() throws SQLException, ClassNotFoundException {
         Class.forName("org.sqlite.JDBC");
-        c = DriverManager.getConnection("jdbc:sqlite:USER.db");
+        c = DriverManager.getConnection("jdbc:sqlite:USER1");
         System.out.println("Opened database successfully");
 
     }
@@ -66,7 +69,7 @@ public class DBMangement {
     }
 
     public ResultSet getAll() throws SQLException {
-        stmt = c.prepareStatement("SELECT * FROM COMPANY;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 
         ResultSet rs = stmt.executeQuery();
 
@@ -80,6 +83,28 @@ public class DBMangement {
         c.commit();
     }
 
+    
+     public User getUser() throws SQLException {
+         if(users==null){
+             users=getAll();
+         }
+        try {
+            if (users.next()) {
+                User user = new User();
+                user.setId(users.getInt("ID"));
+                user.setfName(users.getString("F_NAME"));
+                user.setmName(users.getString("M_NAME"));
+                user.setlName(users.getString("L_NAME"));
+                user.setEmail(users.getString("EMAIL"));
+                user.setPhone(users.getInt("Phone"));
+
+                return user;
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     public ResultSet getFirst(User s) throws SQLException {
         stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
