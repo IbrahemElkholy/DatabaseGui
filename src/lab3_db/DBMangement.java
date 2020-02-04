@@ -37,8 +37,9 @@ public class DBMangement {
         stmt.setString(4, s.getlName());
         stmt.setString(5, s.getEmail());
         stmt.setInt(6, s.getPhone());
+                                stmt = c.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-        stmt.executeUpdate(sql);
+        stmt.executeUpdate();
         c.commit();
     }
 
