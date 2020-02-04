@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -39,8 +41,12 @@ import javafx.stage.Stage;
 public class Lab3_DB extends Application {
 
     DBMangement dBMangement;
-    ResultSet users;
-
+     TextField idField;
+        TextField fNameField;
+        TextField lNameField;
+        TextField mNameField;
+        TextField emailField;
+        TextField phoneField;
     @Override
     public void stop() throws Exception {
         super.stop(); //To change body of generated methods, choose Tools | Templates.
@@ -52,7 +58,6 @@ public class Lab3_DB extends Application {
 
         dBMangement = new DBMangement();
 
-        users = (ResultSet) dBMangement.getAll();
     }
 
     @Override
@@ -68,22 +73,24 @@ public class Lab3_DB extends Application {
 
         addLabelsToGridPane(gridPane);
 
-        TextField idField = new TextField();
+       
+        
+        idField = new TextField();
         idField.setDisable(true);
 
-        TextField fNameField = new TextField();
+        fNameField = new TextField();
         fNameField.setPromptText("First Name");
 
-        TextField lNameField = new TextField();
+        lNameField = new TextField();
         lNameField.setPromptText("Last Name");
 
-        TextField mNameField = new TextField();
+        mNameField = new TextField();
         mNameField.setPromptText("Middle Name");
 
-        TextField emailField = new TextField();
+        emailField = new TextField();
         emailField.setPromptText("Email");
 
-        TextField phoneField = new TextField();
+        phoneField = new TextField();
         phoneField.setPromptText("Phone Number");
 
         gridPane.add(idField, 1, 0);
@@ -103,6 +110,9 @@ public class Lab3_DB extends Application {
         Button firsButton = new Button("First");
         Button previousButton = new Button("Previous");
         Button nextButton = new Button("next");
+        newbButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+            
+        });
         Button lasButton = new Button("Last");
 
         hBox.getChildren()
@@ -131,13 +141,15 @@ public class Lab3_DB extends Application {
         p.getChildren().add(vBox);
         p.setAlignment(Pos.CENTER);
 
-        User user = getUser();
+        User user;
+        try {
+            user = dBMangement.getUser();
+            setFields(user);
+        } catch (SQLException ex) {
+            Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-        idField.setText(String.valueOf(user.getId()));
-        fNameField.setText(user.getfName());
-        mNameField.setText(user.getmName());
-        lNameField.setText(user.getlName());
-        phoneField.setText(String.valueOf(user.getPhone()));
+     
 
         Scene scene = new Scene(p, 300, 250);
 
@@ -162,24 +174,12 @@ public class Lab3_DB extends Application {
         launch(args);
     }
 
-    private User getUser() {
-        try {
-            if (users.next()) {
-                User user = new User();
-                user.setId(users.getInt("id"));
-                user.setfName(users.getString("F_NAME"));
-                user.setmName(users.getString("M_NAME"));
-                user.setlName(users.getString("L_NAME"));
-                user.setEmail(users.getString("EMAIL"));
-                user.setPhone(users.getInt("phone"));
-
-                return user;
-
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
-
+   void setFields(User user){
+       idField.setText(String.valueOf(user.getId()));
+            fNameField.setText(user.getfName());
+            mNameField.setText(user.getmName());
+            lNameField.setText(user.getlName());
+            emailField.setText(user.getEmail());
+            phoneField.setText(String.valueOf(user.getPhone()));
+   }
 }
