@@ -24,18 +24,27 @@ public class DBMangement {
     private ResultSet users;
     private Connection c = null;
     private PreparedStatement stmt;
+    private boolean lastFlag=false,firstFlag=false;
 
     public DBMangement() throws SQLException, ClassNotFoundException {
-        Class.forName("org.sqlite.JDBC");
-        c = DriverManager.getConnection("jdbc:sqlite:USER1");
-        users = getAll();
-        System.out.println("Opened database successfully");
+        try {
+            //Class.forName("org.sqlite.JDBC");
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            //c = DriverManager.getConnection("jdbc:sqlite:USER1");
+            c= DriverManager.getConnection("jdbc:mysql://localhost:3307/mysql","root","" );
+            users = getAll();
+            System.out.println("Opened database successfully");
+        } catch (InstantiationException ex) {
+            Logger.getLogger(DBMangement.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(DBMangement.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
     public void insertRow(User s) throws SQLException {
 
-        String sql = "INSERT INTO company(F_NAME,M_NAME,L_NAME,EMAIL,phone) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO users(F_NAME,M_NAME,L_NAME,EMAIL,phone) VALUES(?,?,?,?,?)";
         stmt.setString(1, s.getfName());
         stmt.setString(2, s.getmName());
         stmt.setString(3, s.getlName());
@@ -51,7 +60,7 @@ public class DBMangement {
 
     public void updateRow(User s) throws SQLException {
 
-        String sql = "UPDATE company SET F_NAME = ? , "
+        String sql = "UPDATE users SET F_NAME = ? , "
                 + "M_NAME = ? ,"
                 + "L_NAME = ? ,"
                 + "EMAIL = ? ,"
@@ -67,13 +76,24 @@ public class DBMangement {
         stmt.setInt(6, s.getId());
 
         stmt.executeUpdate();
-        c.commit();
-        stmt.close();
-        c.close();
+        
+        setCurrentLocation(s.getId());
+    }
+    
+    private void setCurrentLocation(int userID){
+        try {
+            users = getAll();
+            do {
+                users.next();
+                System.out.println(users.toString());  
+            } while (users.getInt("ID") < userID);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBMangement.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public ResultSet getAll() throws SQLException {
-        stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+        stmt = c.prepareStatement("SELECT * FROM users;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
         ResultSet rs = stmt.executeQuery();
 
@@ -81,21 +101,20 @@ public class DBMangement {
     }
 
     public void deletRow(int userID) throws SQLException {
-        stmt = c.prepareStatement("DELETE from company where ID = ?;", ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        
+        stmt = c.prepareStatement("DELETE from users where ID = ?;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+
         stmt.setInt(1, userID);
         stmt.executeUpdate();
-        
-        users = getAll();
-        do {            
-            users.next();
-            System.out.println(users.toString());
-        } while (users.getInt("ID")<userID);
+
+        setCurrentLocation(userID);
     }
 
     public User getUser() throws SQLException {
 
-        if (users.next()) {
+        if (users.next()&&!lastFlag) {
+              if(users==null){
+                lastFlag=true;
+            }else{
             User user = new User();
             user.setId(users.getInt("ID"));
             user.setfName(users.getString("F_NAME"));
@@ -105,15 +124,17 @@ public class DBMangement {
             user.setPhone(users.getInt("Phone"));
 
             return user;
-
+              }
         }
 
         return null;
     }
 
     public User getPrUser() throws SQLException {
-        if (users.previous()) {
-
+        if (users.previous() && !firstFlag) {
+            if(users==null){
+                firstFlag=true;
+            }else{
             User user = new User();
             user.setId(users.getInt("ID"));
             user.setfName(users.getString("F_NAME"));
@@ -123,29 +144,41 @@ public class DBMangement {
             user.setPhone(users.getInt("Phone"));
 
             return user;
-
+            }
         }
 
         return null;
     }
 
-    public ResultSet getFirst(User s) throws SQLException {
-        stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    public User getFirst() throws SQLException {
 
-        ResultSet rs = stmt.executeQuery();
-        while (rs.next()) {
+        if (users.first()) {
+            User user = new User();
+            user.setId(users.getInt("ID"));
+            user.setfName(users.getString("F_NAME"));
+            user.setmName(users.getString("M_NAME"));
+            user.setlName(users.getString("L_NAME"));
+            user.setEmail(users.getString("EMAIL"));
+            user.setPhone(users.getInt("Phone"));
 
-            rs.getString(1);
+            return user;
         }
-        return rs;
+        return null;
     }
 
-    public ResultSet getLast(User s) throws SQLException {
-        stmt = c.prepareStatement("SELECT * FROM company;", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    public User getLast() throws SQLException {
+        if (users.last()) {
+            User user = new User();
+            user.setId(users.getInt("ID"));
+            user.setfName(users.getString("F_NAME"));
+            user.setmName(users.getString("M_NAME"));
+            user.setlName(users.getString("L_NAME"));
+            user.setEmail(users.getString("EMAIL"));
+            user.setPhone(users.getInt("Phone"));
 
-        ResultSet rs = stmt.executeQuery();
-        rs.last();
-        return rs;
+            return user;
+        }
+        return null;
     }
 
 }

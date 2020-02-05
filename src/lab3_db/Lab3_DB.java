@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -21,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -31,8 +31,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
@@ -49,6 +51,14 @@ public class Lab3_DB extends Application {
     TextField emailField;
     TextField phoneField;
 
+    Button newbButton;
+    Button updateButton;
+    Button deleteButton;
+    Button firsButton;
+    Button previousButton;
+    Button nextButton;
+    Button lasButton;
+
     @Override
     public void stop() throws Exception {
         super.stop(); //To change body of generated methods, choose Tools | Templates.
@@ -60,13 +70,114 @@ public class Lab3_DB extends Application {
 
         dBMangement = new DBMangement();
 
+        newbButton = new Button("New");
+        updateButton = new Button("Update");
+        deleteButton = new Button("Delete");
+        firsButton = new Button("First");
+        previousButton = new Button("Previous");
+        nextButton = new Button("next");
+        lasButton = new Button("Last");
+
+        firsButton.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    User user = dBMangement.getFirst();
+                    if (user != null) {
+                        setFields(user);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        lasButton.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    User user = dBMangement.getLast();
+                    if (user != null) {
+                        setFields(user);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        previousButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+            try {
+                User user = dBMangement.getPrUser();
+                setFields(user);
+            } catch (SQLException ex) {
+                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        nextButton.addEventHandler(ActionEvent.ACTION, (event) -> {
+            try {
+                User user = dBMangement.getUser();
+
+                if (user != null) {
+                    setFields(user);
+                }
+
+            } catch (SQLException ex) {
+                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+
+        updateButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                User user = new User();
+                user.setId(Integer.parseInt(idField.getText()));
+                user.setfName(fNameField.getText());
+                user.setlName(lNameField.getText());
+                user.setmName(mNameField.getText());
+                user.setEmail(emailField.getText());
+                user.setPhone(Integer.parseInt(phoneField.getText()));
+                try {
+                    dBMangement.updateRow(user);
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
+        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    dBMangement.deletRow(Integer.parseInt(idField.getText()));
+                    User user = dBMangement.getUser();
+
+                    if (user != null) {
+                        setFields(user);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+
     }
 
     @Override
     public void start(Stage primaryStage) {
 
         primaryStage.setWidth(600);
-        primaryStage.setHeight(500);
+        primaryStage.setHeight(450);
+       
+        primaryStage.setMaxWidth(600);
+        primaryStage.setMaxHeight(450);
+        
+        primaryStage.setMinWidth(600);
+        primaryStage.setMinHeight(450);
+       
 
         GridPane gridPane = new GridPane();
         gridPane.setVgap(10);
@@ -104,70 +215,6 @@ public class Lab3_DB extends Application {
 
         HBox hBox = new HBox();
 
-        Button newbButton = new Button("New");
-        Button updateButton = new Button("Update");
-        Button deleteButton = new Button("Delete");
-        Button firsButton = new Button("First");
-        Button previousButton = new Button("Previous");
-        previousButton.addEventHandler(ActionEvent.ACTION, (event) -> {
-            try {
-                User user = dBMangement.getPrUser();
-                setFields(user);
-            } catch (SQLException ex) {
-                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
-        Button nextButton = new Button("next");
-        nextButton.addEventHandler(ActionEvent.ACTION, (event) -> {
-            try {
-                User user = dBMangement.getUser();
-
-                if (user != null) {
-                    setFields(user);
-                }
-
-            } catch (SQLException ex) {
-                Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-
-        Button lasButton = new Button("Last");
-        updateButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                User user = new User();
-                user.setId(Integer.parseInt(idField.getText()));
-                user.setfName(fNameField.getText());
-                user.setlName(lNameField.getText());
-                user.setmName(mNameField.getText());
-                user.setEmail(emailField.getText());
-                user.setPhone(Integer.parseInt(phoneField.getText()));
-                try {
-                    dBMangement.updateRow(user);
-                } catch (SQLException ex) {
-                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-
-        deleteButton.setOnAction(new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event) {
-                try {
-                    dBMangement.deletRow(Integer.parseInt(idField.getText()));
-                    User user = dBMangement.getUser();
-
-                if (user != null) {
-                    setFields(user);    
-                }   
-                } catch (SQLException ex) {
-                    Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
         hBox.getChildren()
                 .addAll(newbButton,
                         updateButton,
@@ -187,21 +234,33 @@ public class Lab3_DB extends Application {
         vBox.setAlignment(Pos.CENTER);
 
         vBox.getChildren().addAll(gridPane, hBox);
-        vBox.setPadding(new Insets(25));
 
-        FlowPane p = new FlowPane();
-        p.setPadding(new Insets(200));
-        p.getChildren().add(vBox);
-        p.setAlignment(Pos.CENTER);
+        
+        
+        StackPane pane = new StackPane();
+        pane.getChildren().add(vBox);
+        pane.setPadding(new Insets(50, 25, 50, 25));
+        
+        
+        Label l = new Label("Person Details");
+        l.setFont(new Font(18));
+        l.setPadding(new Insets(40, 10, 0, 30));
+        l.setStyle("-fx-background-color: white");
+        StackPane stackPane = new StackPane(pane,l);
+        
+        stackPane.setAlignment(l,Pos.TOP_LEFT);
+                stackPane.setStyle("-fx-background-color: white");
 
+
+        //get first user
         try {
-           User user = dBMangement.getUser();
+            User user = dBMangement.getUser();
             setFields(user);
         } catch (SQLException ex) {
             Logger.getLogger(Lab3_DB.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Scene scene = new Scene(p, 300, 250);
+        Scene scene = new Scene(stackPane, 300, 250);
 
         primaryStage.setTitle("Database Viewer");
         primaryStage.setScene(scene);
